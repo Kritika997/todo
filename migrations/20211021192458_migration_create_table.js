@@ -1,10 +1,12 @@
 
 exports.up = function(knex) {
     return knex.schema
-    .createTable("usersignup",(table)=>{
+    .createTable("UserDetails",(table)=>{
         table.increments('id').primary();
+        table.string("profile_picture",255).notNullable();
         table.string('UserName',255).notNullable()
         table.string('Email',255).notNullable()
+        table.integer("Phone_number",255).notNullable()
         table.string('password',255).notNullable()
         table.string('Gender',255).notNullable()
         table.string('DOb',255).notNullable()
@@ -16,5 +18,7 @@ exports.up = function(knex) {
   
 };
 exports.down = function(knex) {
-  return knex.schema.dropTable("")
+  return knex.schema.dropTable("UserDetails")
 };
+
+
