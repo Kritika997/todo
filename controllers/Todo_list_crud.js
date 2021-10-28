@@ -20,7 +20,7 @@ exports.createTodo = (req, res) =>{
         knexcon.select("id").from("UserDetails").
         where({Email:decoded.email}).
         then((data)=>{
-            console.log(data) 
+            // console.log(data) 
             if(data.length!=0){
                 knexcon("todo_list").insert([
                     {
@@ -31,20 +31,7 @@ exports.createTodo = (req, res) =>{
                     }
                 ])
                 .then((result)=>{
-                    // console.log(result);
-                    if(result){ 
-                        var Title = req.body.Title;
-                        var id = data[0]["id"]
-                        var token = jwt.sign({Title,id},"todoList",{
-                            expiresIn:"2h"
-                    })
-                    res.cookie("list",token).json({
-                        message:"founded",
-                        event_token:token
-                    })
-                    }else{
-                        res.send("failed")
-                    }
+                    res.send("Todo Created")
                 })
                 .catch((err)=>{
                     res.send(err);
@@ -64,33 +51,56 @@ exports.createTodo = (req, res) =>{
 };
 
 exports.ReadList = (req,res)=>{
-    knexcon.select("*").from("todo_list").
-    then((result)=>{
-        res.send(result)
-    })
-    .catch((err)=>{
-        res.send(err)
-    })
+    var Usertoken = req.headers.cookie;
+    if(Usertoken){
+        const token = Usertoken.split(' ')[0];
+        const sliceToken = token.slice(4, token.length - 1);
+        // console.log(sliceToken) 
+        let decoded = jwt.decode(sliceToken,"SecretKey");
+        req.decoded=decoded
+        // console.log(decoded);
+        knexcon.select("id").from("UserDetails").
+        where({Email:decoded.email}).
+        then((data)=>{
+            if(data.length!=0){
+                // console.log(data[0]["id"])
+                knexcon.select("*").from("todo_list").where({Todo_Status:req.body.Todo_Status}).
+                then((data)=>{
+                    res.send(data)
+                })
+                .catch((err)=>{
+                    res.send(err)
+                })
+            }
+            else{
+                res.send("data is not exits")
+            };
+        })
+        .catch((err)=>{
+            res.send(err)
+        })
+    }
+    else{
+        res.send("token is not")
+    }
 }
 
 exports.listUpate = (req,res)=>{
     // console.log((req));
     var Usertoken = req.headers.cookie;
-    
     if(Usertoken){
-        
         const token = Usertoken.split(' ')[0];
-        // console.log(token)
-        const sliceToken = token.slice(5, token.length - 0)
-        // console.log(sliceToken)
-        let decoded = jwt.decode(sliceToken,"todoList");
+        const sliceToken = token.slice(4, token.length - 1);
+        // console.log(sliceToken) 
+        let decoded = jwt.decode(sliceToken,"SecretKey");
         req.decoded=decoded
         // console.log(decoded);
-        knexcon.select("id").from("todo_list").where({Title:decoded.Title}).
+        knexcon.select("id").from("UserDetails").
+        where({Email:decoded.email}).
         then((data)=>{
             // console.log(data);
             if(data.length!=0){
-                knexcon("todo_list").where({Title:decoded.Title}).
+                knexcon("todo_list").where({Todo_Status:req.body.Todo_Status}).
                 update({
                     Todo_Status:req.body.Todo_Status,
                     Title:req.body.Title,
@@ -118,20 +128,21 @@ exports.listUpate = (req,res)=>{
 
 exports.ListDelete = (req,res)=>{
     // console.log(req)
-    var Usertoken = req.headers.authorization;    
+    var Usertoken = req.headers.cookie;    
     if(Usertoken){        
-        const token = Usertoken.split(' ')[1];
+        const token = Usertoken.split(' ')[0];
         // console.log(token)
-        const sliceToken = token.slice(5, token.length - 1)
+        const sliceToken = token.slice(4, token.length - 1)
         // console.log(sliceToken)
-        let decoded = jwt.decode(sliceToken,"todoList");
+        let decoded = jwt.decode(sliceToken,"SecretKey");
         req.decoded=decoded
-        console.log(decoded)
-        knexcon.select("id").from("todo_list").where({Title:decoded.Title}).
+        // console.log(decoded)
+        knexcon.select("id").from("UserDetails").
+        where({Email:decoded.email}).
         then((result)=>{
-            console.log(result);
+            console.log(result[0]["id"]);
             if(result!=0){ 
-                knexcon("todo_list").where({Title:req.body.Title}).
+                knexcon.select("*").from("todo_list").where({DetailKey:result[0]["id"]}).
                 del()
                 .then(()=>{
                     res.send("data deleted")

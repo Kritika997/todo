@@ -51,10 +51,9 @@ exports.userSignin = async(req, res) => {
             var password = data[0]["password"];
             if(bcrypt.compare(req.body.password,password)){
                 if (data.length !== 0) {
-                    var email = data[0]["Email"];  
-                    var password = req.body.password;
-                    var log_token = jwt.sign({ email, password }, "SecretKey", {
-                        expiresIn: "2h"
+                    var email = data[0]["Email"]; 
+                    var log_token = jwt.sign({email}, "SecretKey", {
+                        expiresIn: "1d"
                     });
                     res.cookie("jwt", log_token).json({
                         message: "user_found", 
