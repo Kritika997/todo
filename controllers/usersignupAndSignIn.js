@@ -29,7 +29,7 @@ exports.userRegister = async (req, res) => {
         Qualification:req.body.Qualification, 
         Terms_and_Conditions:req.body.Terms_and_Conditions, 
     }
-    knexcon("UserDetails").insert([
+    knexcon("UserDetails").insert([ 
         {
             UserName:user_details.UserName,profile_picture:user_details.profile_picture, Email:user_details.Email,Phone_number:user_details.Phone_number, password:user_details.password,
             Gender:user_details.Gender, DOb:user_details.DOb, Qualification:user_details.Qualification, 
@@ -48,9 +48,8 @@ exports.userSignin = async(req, res) => {
     knexcon.select('Email','password').
         from('UserDetails').where((req.body.Phone_number?{"Phone_number":req.body.Phone_number}:{"Email":req.body.Email}))
         .then(data =>{
-            var password = data[0]["password"]
+            var password = data[0]["password"];
             if(bcrypt.compare(req.body.password,password)){
-                // console.log("kritisavjd")
                 if (data.length !== 0) {
                     var email = data[0]["Email"];  
                     var password = req.body.password;
@@ -61,7 +60,7 @@ exports.userSignin = async(req, res) => {
                         message: "user_found", 
                         log_user: log_token
                     })
-                    res.status(200)
+                    res.status(200);
                 }else { 
                     res.status(400).json({
                         message: "failed" 
@@ -69,8 +68,8 @@ exports.userSignin = async(req, res) => {
                 };
             }
             else{
-                console.log("password is invalid ")
-            }
+                console.log("password is invalid "); 
+            };
             
         })
         .catch(err => 
@@ -78,9 +77,6 @@ exports.userSignin = async(req, res) => {
 };
 
 exports.authUser = (req,res)=>{
-    res.send(req.user)
-}
+    res.send(req.user);
+};
 
-exports.check =(req,res)=>{
-    res.send({message:"checking"})
-}

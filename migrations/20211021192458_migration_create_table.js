@@ -15,10 +15,17 @@ exports.up = function(knex) {
         table.unique('Email')
         table.unique('password')
     })
+    .createTable('todo_list',(table)=>{
+      table.increments('id').primary();
+      table.string('Title',255).notNullable();
+      table.string('Todo_Status',255).notNullable();
+      table.string("description",255).notNullable();
+      table.integer("DetailKey").references("id").inTable('UserDetails').unsigned();
+  })
   
 };
 exports.down = function(knex) {
-  return knex.schema.dropTable("UserDetails")
+  return knex.schema.dropTable("UserDetails").dropTable("todo_list");
 };
 
 
