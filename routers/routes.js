@@ -11,5 +11,4 @@ route.post("/createTodo",Todo.createTodo);
 route.get("/ReadList",Todo.ReadList);
 route.put("/listUpate",Todo.listUpate);
 route.delete("/ListDelete",Todo.ListDelete);
-route.get("/34567890-")
 module.exports = route;      
